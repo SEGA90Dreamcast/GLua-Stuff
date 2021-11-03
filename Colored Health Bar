@@ -1,0 +1,82 @@
+// remove default HUD health display
+hook.Add( "HUDShouldDraw", "hide hud", function( name )
+if ( name == "CHudHealth" or name == "CHudBattery" ) then
+return false
+end
+-- Never return anything default here, it will break other addons using this hook.
+end )
+
+cur_health = LocalPlayer():GetMaxHealth()
+cur_health_index = 10
+
+health_colors = {}
+health_colors[0] = {r=255, g=0, b=0 }  // red
+health_colors[1] = {r=255, g=81, b=0 }  // 
+health_colors[2] = {r=255, g=121, b=0 }  // 
+health_colors[3] = {r=255, g=169, b=0 }  // 
+health_colors[4] = {r=255, g=200, b=0 }  // 
+health_colors[5] = {r=255, g=255, b=0 }  // yellow
+health_colors[6] = {r=200, g=255, b=0 }  // 
+health_colors[7] = {r=160, g=255, b=0 }  // 
+health_colors[8] = {r=121, g=255, b=0 }  // 
+health_colors[9] = {r=81, g=255, b=0 }  // 
+health_colors[10] = {r=0, g=255, b=0 }  // green
+
+surface.CreateFont("Beginner", {
+    font = "Tahoma",
+    size = 40,
+	weight = 500,
+	blursize = 0,
+	scanlines = 0,
+	antialias = true,
+	underline = false,
+	italic = false,
+	strikeout = false,
+	symbol = false,
+	rotary = false,
+	shadow = false,
+	additive = false,
+	outline = false,
+
+}   )
+
+
+
+hook.Add("HUDPaint", "SPaint", function()
+
+    if LocalPlayer():Alive() then
+
+        local health = LocalPlayer():Health()
+        local healthColor
+        local h
+        
+        if cur_health < 0 then
+            cur_health = 0
+            cur_health_index = 0
+        end 
+
+        if(health != nil) 
+        then 
+            draw.RoundedBox(20, 8, 8, 404, 34, Color(0, 0, 0))
+            draw.RoundedBox(20, 10, 10, health*4, 30, Color(health_colors[cur_health_index]["r"], health_colors[cur_health_index]["g"], health_colors[cur_health_index]["b"]))
+            draw.SimpleText(health.."%", "Beginner", 400, 5, Color(255,255,255), TEXT_ALIGN_RIGHT, 0, 0)
+        //        draw.SimpleText(cur_health_index, "Beginner", 30, 8, Color(health_colors[cur_health_index]["r"], health_colors[cur_health_index]["g"], health_colors[cur_health_index]["b"]), 0, 0)
+        /*if health == 0 then
+                draw.SimpleText("WASTED", "Beginner", 30, 8, Color(157,255,0), 0, 0)
+        end*/
+
+            if (health != cur_health) and (health >= 0) then
+                cur_health_index = math.floor(health / 10) 
+                if cur_health_index == nil then cur_health_index = 0 end
+                  //              draw.SimpleText("cur_health_index", "Beginner", 30, 300, Color(4,0,255), 0, 0)
+
+
+                draw.SimpleText(cur_health_index, "Beginner", 30, 8, Color(health_colors[cur_health_index]["r"], health_colors[cur_health_index]["g"], health_colors[cur_health_index]["b"]), 0, 0)
+        //        draw.SimpleText(health_colors[cur_health_index]["r"], "Beginner", 30, 8, Color(255,0,0), 0, 0)
+        //        draw.SimpleText(cur_health_index, "Beginner", 30, 8, Color(255,0,0), 0, 0)
+        //        draw.SimpleText(cur_health_index, "Beginner", 30, 8, Color(255,0,0), 0, 0)
+                cur_health = health
+        end
+    end
+end
+end)
